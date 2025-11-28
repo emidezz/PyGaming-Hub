@@ -50,8 +50,8 @@ except pygame.error as e:
     AUDIO_DISPONIVEL = False
     MUSICA_BOSS = None
 
-_default_width = 1920
-_default_height = 1080
+_default_width = 1280
+_default_height = 720
 _default_fullscreen = False
 
 try:
@@ -552,10 +552,7 @@ class Boss:
             self.minions = self.minions[:MAX_MINIONS_PER_BOSS]
         
         
-        if self.hp <= 0 and AUDIO_DISPONIVEL:
-            if MUSICA_BOSS is not None:
-                MUSICA_BOSS.stop()
-            pygame.mixer.music.play(-1)
+       
 
     def draw(self, surf):
         rect = pygame.Rect(self.x - self.size, self.y - self.size, self.size*2, self.size*2)
@@ -597,10 +594,7 @@ class Game:
         self.in_boss_phase = True
         
         
-        if AUDIO_DISPONIVEL:
-            pygame.mixer.music.stop()
-            if MUSICA_BOSS is not None:
-                MUSICA_BOSS.play(-1)
+        
 
     def reset(self):
         self.__init__()
