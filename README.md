@@ -1,167 +1,65 @@
-#🧨 Campo Minado – PyGaming Hub
+# PyGaming Hub 🎮 
 
-Versão simples do jogo **Campo Minado**
----
+Um launcher de jogos educacionais feitos em Python, desenvolvido com a biblioteca Pygame. Este projeto funciona como um *frontend* (interface) de console arcade, projetado para descobrir e lançar outros jogos em Pygame de forma organizada.  
 
-## 📌 1. Visão Geral
+## 🎯 Sobre o Projeto O **PyGaming Hub** foi criado com um duplo objetivo: 
+1. **Como Produto:** Servir como um hub centralizado e simples para organizar e jogar pequenos jogos educacionais feitos em Python/Pygame. É ideal para *game jams*, oficinas de programação ou para agrupar projetos de uma turma.
+2. **Como Estudo:** Ser um projeto prático que demonstra conceitos importantes de desenvolvimento de software em Python, como:
+* Gerenciamento de "estados" (telas) em Pygame (menu, ajuda, biblioteca, etc.).
+* Leitura e escrita de arquivos de configuração externos (`.ini`).
+* Detecção dinâmica de conteúdo (varredura de pastas de jogos).
+* Execução de scripts Python externos como subprocessos. 
 
-O jogo usa teclado pra tudo e carrega automaticamente:
+## ✨ Funcionalidades 
+* **Menu Principal Navegável:** Interface limpa para acessar as diferentes seções do console.
+* **Detecção Automática de Jogos:** Escaneia o diretório `/games` e lista automaticamente qualquer jogo que contenha os arquivos `main.py` e `data.inf`.
+* **Configuração Centralizada:** Todas as configurações (resolução, tela cheia e controles) são salvas em `conf/conf.ini`.
+* **Controles Unificados:** Os jogos lançados são projetados para ler o mesmo `conf/conf.ini`, permitindo que o usuário configure seus controles **uma única vez** no menu principal.
+* **Lançador de Subprocessos:** Inicia os jogos de forma independente e, quando o jogo é fechado (com a tecla "Pause"), retorna automaticamente ao menu do Hub. 
 
-* tamanho da tela
-* fullscreen opcional
-* teclas configuráveis
-* cursor para navegar nas células
-* lógica completa (minas, números, bandeiras, flood-fill, vitória/derrota)
+## 🕹️ Como Adicionar Seus Próprios Jogos 
 
-A qualquer momento você pode apertar **Pause** pra fechar o jogo.
-
----
-
-## ⚙️ 2. Configuração (conf.ini)
-
-O sistema procura:
-
+Para que o PyGaming Hub detecte seu jogo educacional, basta seguir esta estrutura de pastas: 
 ```
-conf/conf.ini
-../conf/conf.ini
+PyGaming Hub/
+├── games/
+│   └── MeuNovoJogo/       <-- 1. Crie uma pasta para seu jogo
+│       ├── main.py        <-- 2. O script principal do seu jogo
+│       └── data.inf       <-- 3. O arquivo de metadados
+├── conf/
+└── main.py                <-- O launcher principal
+``` 
+
+O arquivo `data.inf` é essencial e deve ter o seguinte formato: 
 ```
+[Game]
+nome = Nome de Exibição do Jogo
+autores = Nome do Autor 1, Autor 2 
+``` 
 
-Se existir, o jogo lê:
+O script `main.py` do seu jogo (como o "Simple Mover" de exemplo) deve ser capaz de ler o arquivo `conf/conf.ini` da raiz do projeto para carregar as configurações de controle e resolução. 
 
-### **[Display]**
-
-* `width` – largura
-* `height` – altura
-* `fullscreen` – true/false
-
-### **[Controls]**
-
-* `up`, `down`, `left`, `right`
-* `action_a` → revelar
-* `action_b` → bandeira / reiniciar
-* `pause`
-
-Se faltar algo, o padrão é usado.
-A função `name_to_keycode()` converte texto tipo `"z"` ou `"up"` para teclas do pygame.
-
----
-
-## 🖥️ 3. Inicialização
-
-O jogo prepara:
-
-* janela com tamanho desejado
-* fullscreen (opcional)
-* clock de FPS
-* fontes padrão
-
-Ex.:
-
-```python
-screen = pygame.display.set_mode((W, H), flags)
+## 🚀 Como Executar 
+Você precisará do Python 3 e da biblioteca Pygame instalados. 
+1. **Clone este repositório:**
 ```
-
----
-
-## 🎯 4. Regras do Jogo
-
-* Grade: **9x9**
-* Minas: **10**
-* Células ajustam tamanho automático
-* Tabuleiro fica centralizado
-* Todas as cores e estilos são definidos no código
-
----
-
-## 🧠 5. Estrutura dos Dados
-
-O tabuleiro usa três matrizes:
-
-| Matriz     | Função                   |
-| ---------- | ------------------------ |
-| `board`    | -1 = mina / 0–8 = número |
-| `revealed` | células já abertas       |
-| `flagged`  | células marcadas         |
-
-A função `new_board()` cria tudo:
-
-* sorteia minas
-* calcula números
-* monta matrizes auxiliares
-
----
-
-## 🏳️ 6. Lógica Principal
-
-* **reveal_cell**
-
-  * mina → derrota
-  * zero → abre área com flood-fill
-  * número → só mostra
-* **bandeira**
-  funciona só em célula não revelada
-* **check_win**
-  confere se todas as células seguras foram abertas
-* **reset_game**
-  reinicia tudo
-
----
-
-## 🎨 7. Renderização (pygame.draw)
-
-Sem imagens, só shapes:
-
-* `draw_board()` → tabuleiro, números, minas, bandeiras, cursor
-* `draw_status()` → textos de ajuda, minas restantes, vitória/derrota
-
----
-
-## 🎮 8. Loop Principal
-
-A cada frame o jogo:
-
-1. limita a 60 FPS
-2. lê eventos
-3. move cursor
-4. revela célula (A)
-5. marca bandeira (B)
-6. checa vitória/derrota
-7. redesenha tela se precisar
-
-Sai com **Pause** ou fechando a janela.
-
----
-
-## ⌨️ 9. Controles (padrão)
-
-| Ação                 | Tecla      |
-| -------------------- | ---------- |
-| Mover                | Setas      |
-| Revelar              | **Z**      |
-| Bandeira / Reiniciar | **X**      |
-| Sair                 | **Escape** |
-
-Todos podem ser mudados no `conf.ini`.
-
----
-
-## 🧱 10. Estrutura do Código
-
+git clone https://github.com/seu-usuario/pygaming-hub.git
+cd pygaming-hub
 ```
-main.py
-├── leitura do conf.ini
-├── setup inicial
-├── funções do tabuleiro
-│   ├── new_board
-│   ├── reveal_cell
-│   └── check_win
-├── funções de desenho
-│   ├── draw_board
-│   └── draw_status
-└── main()
+2. **(Opcional) Crie um ambiente virtual:**
 ```
-
----
+python -m venv venv
+source venv/bin/activate  # No Windows: venv\Scripts\activate
+```
+3. **Instale as dependências:**
+```
+pip install pygame
+```
+5. **Execute o console:**
+```
+python main.py
+```
+Na primeira execução, a pasta `conf/` e o arquivo `conf.ini` com as configurações padrão serão criados automaticamente.  
 
 ## 🔧 Configuração 
 Todas as configurações do console e dos jogos são controladas pelo arquivo `conf/conf.ini`: 
